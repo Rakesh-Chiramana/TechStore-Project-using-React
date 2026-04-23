@@ -2,6 +2,7 @@ import ProductCard from "./components/ProductCard";
 import products from "./data";
 import "./App.css";
 import { useState } from "react";
+import { useEffect } from "react";
 
 function App() {
   //BRANDS
@@ -9,10 +10,48 @@ function App() {
 
   // State
   // Cart - array of products in cart
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(()=>{
 
-  // Wishlist - array of product IDs that are wishlisted
-  const [wishlist, setWishlist] = useState([]);
+    const savedCart = localStorage.getItem("techstore-cart");
+
+    if(savedCart)
+    {
+      try {
+        return JSON.parse(savedCart);  
+      } catch (error) {
+        console.error("Problem!!!",error);
+        return []
+      }
+    }
+    return []    
+  });
+  useEffect(() => {
+    localStorage.setItem("techstore-cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+
+
+  
+ // Wishlist - array of product IDs that are wishlisted
+  const [wishlist, setWishlist] = useState(()=>{
+  const savedWishlist = localStorage.getItem("techstore-wishlist");
+    if(savedWishlist){
+      try {
+        return JSON.parse(savedWishlist);
+        
+      } catch (error) {
+        console.error("Problem with Wishlist data",error);
+        return []        
+      }
+    }
+    return [];
+  });
+
+  useEffect(()=>{
+    localStorage.setItem("techstore-wishlist", JSON.stringify(wishlist));
+  },[wishlist])
+
+
 
   // Search - what user types in search box
   const [searchTerm, setSearchTerm] = useState("");
