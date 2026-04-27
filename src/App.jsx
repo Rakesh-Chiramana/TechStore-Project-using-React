@@ -1,8 +1,14 @@
-import ProductCard from "./components/ProductCard";
 import products from "./data";
 import "./App.css";
 import { useState } from "react";
 import { useEffect } from "react";
+
+// Import Components
+import Navbar from "./components/NAV-BAR/Navbar";
+import Cart from "./components/NAV-BAR/Cart";
+import Hero from "./components/HERO-SECTION/Hero";
+import BestSeller from "./components/SECTIONS/BestSeller";
+import Footer from "./components/FOOTER/Footer";
 
 function App() {
   //BRANDS
@@ -156,310 +162,54 @@ function App() {
 
   return (
     <div className={`app ${isDarkMode ? "dark" : "light"}`}>
-      {/* Navigation */}
-      <nav className="navbar">
-        <div className="nav-container">
-          <a href="/" className="logo">
-            <span className="logo-icon">◆</span>
-            TechStore
-          </a>
+      {/* Navbar Component */}
+      <Navbar
+        isDarkMode={isDarkMode}
+        onThemeToggle={() => setIsDarkMode(!isDarkMode)}
+        onCartOpen={() => setIsCartOpen(true)}
+        cartCount={cartCount}
+        wishlistCount={wishlist.length}
+      />
 
-          <ul className="nav-links">
-            <li>
-              <a href="#" className="nav-link">
-                Products
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link">
-                Deals
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link">
-                Support
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link">
-                About
-              </a>
-            </li>
-          </ul>
+      {/* Cart Sidebar Component */}
+      <Cart
+        isOpen={isCartOpen}
+        cartItems={cartItems}
+        cartCount={cartCount}
+        cartTotal={cartTotal}
+        onClose={() => setIsCartOpen(false)}
+        onUpdateQuantity={updateQuantity}
+        onRemoveItem={removeFromCart}
+      />
 
-          <div className="nav-actions">
-            {/* Dark Mode Toggle */}
-            <button
-              className="nav-btn icon-btn theme-toggle"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            >
-              {isDarkMode ? "☀️" : "🌙"}
-            </button>
+      {/* Hero Section Component */}
+      <Hero />
 
-            {/* Wishlist Button with Count */}
-            <button className="nav-btn icon-btn">
-              ♡
-              {wishlist.length > 0 && (
-                <span className="badge">{wishlist.length}</span>
-              )}
-            </button>
+      {/* Best Sellers/Products Section Component */}
+      <BestSeller
+        products={products}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedBrand={selectedBrand}
+        onBrandChange={setSelectedBrand}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        allBrands={allBrands}
+        filteredProducts={filteredProducts}
+        cartCount={cartCount}
+        cartTotal={cartTotal}
+        onViewCart={() => setIsCartOpen(true)}
+        wishlist={wishlist}
+        onAddToCart={addToCart}
+        onToggleWishlist={toggleWishlist}
+        onClearFilters={() => {
+          setSearchTerm("");
+          setSelectedBrand("All");
+        }}
+      />
 
-            {/* Cart Button with Count */}
-            <button
-              className="nav-btn icon-btn"
-              onClick={() => setIsCartOpen(true)}
-            >
-              🛒
-              {cartCount > 0 && <span className="badge">{cartCount}</span>}
-            </button>
-            <button className="nav-btn">Sign In</button>
-            <button className="nav-btn primary">Shop Now</button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Cart Sidebar */}
-      {isCartOpen && (
-        <div className="cart-overlay" onClick={() => setIsCartOpen(false)}>
-          <div className="cart-sidebar" onClick={(e) => e.stopPropagation()}>
-            <div className="cart-header">
-              <h2>Your Cart ({cartCount})</h2>
-              <button
-                className="cart-close"
-                onClick={() => setIsCartOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="cart-items">
-              {cartItems.length === 0 ? (
-                <div className="cart-empty">
-                  <span className="cart-empty-icon">🛒</span>
-                  <p>Your cart is empty</p>
-                  <button
-                    className="btn-primary"
-                    onClick={() => setIsCartOpen(false)}
-                  >
-                    Continue Shopping
-                  </button>
-                </div>
-              ) : (
-                cartItems.map((item) => (
-                  <div key={item.id} className="cart-item">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="cart-item-image"
-                    />
-                    <div className="cart-item-details">
-                      <h4>{item.name}</h4>
-                      <p className="cart-item-price">
-                        ₹{item.price.toLocaleString("en-IN")}
-                      </p>
-                      <div className="quantity-controls">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
-                        >
-                          −
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    <button
-                      className="cart-item-remove"
-                      onClick={() => removeFromCart(item.id)}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {cartItems.length > 0 && (
-              <div className="cart-footer">
-                <div className="cart-subtotal">
-                  <span>Subtotal:</span>
-                  <span className="cart-subtotal-price">
-                    ₹{cartTotal.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <button className="btn-checkout-full">
-                  Proceed to Checkout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-content">
-          <p className="hero-tag">New Arrivals 2025</p>
-          <h1 className="hero-title">
-            The Future of Tech
-            <br />
-            <span className="hero-highlight">Is Here.</span>
-          </h1>
-          <p className="hero-description">
-            Discover the latest in premium technology. From powerful computers
-            to cutting-edge smartphones, find everything you need in one place.
-          </p>
-          <div className="hero-cta">
-            <button className="btn-primary">Explore Products</button>
-            <button className="btn-secondary">Learn More</button>
-          </div>
-        </div>
-        <div className="hero-stats">
-          <div className="stat">
-            <span className="stat-number">50K+</span>
-            <span className="stat-label">Happy Customers</span>
-          </div>
-          <div className="stat">
-            <span className="stat-number">200+</span>
-            <span className="stat-label">Premium Products</span>
-          </div>
-          <div className="stat">
-            <span className="stat-number">24/7</span>
-            <span className="stat-label">Customer Support</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Products Section */}
-      <section className="products-section" id="products">
-        <div className="section-header">
-          <h2 className="section-title">Best Sellers</h2>
-          <p className="section-subtitle">
-            Our most popular products loved by customers
-          </p>
-        </div>
-        {/* Search and Filter Controls */}
-        <div className="filter-controls">
-          {/* Search Box */}
-          <div className="search-box">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-            {searchTerm && (
-              <button className="clear-btn" onClick={() => setSearchTerm("")}>
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Brand Filter Dropdown */}
-          <select
-            value={selectedBrand}
-            onChange={(e) => setSelectedBrand(e.target.value)}
-            className="filter-select"
-          >
-            <option value="All">All Brands</option>
-            {allBrands.map((brand) => (
-              <option key={brand} value={brand}>
-                {brand}
-              </option>
-            ))}
-          </select>
-
-          {/* Sort Dropdown */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="filter-select"
-          >
-            <option value="default">Sort By</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="rating">Rating</option>
-          </select>
-        </div>
-
-        {/* Results Count */}
-        <p className="results-count">
-          Showing {filteredProducts.length} of {products.length} products
-          {searchTerm && ` for "${searchTerm}"`}
-          {selectedBrand !== "All" && ` in ${selectedBrand}`}
-        </p>
-
-        {/* Cart Summary Bar - Shows only when cart has items */}
-        {cartItems.length > 0 && (
-          <div className="cart-summary">
-            <div className="cart-summary-content">
-              <div className="cart-summary-info">
-                <span className="cart-summary-icon">🛒</span>
-                <span className="cart-summary-count">{cartCount} {cartCount === 1 ? 'item' : 'items'} in cart</span>
-              </div>
-              <div className="cart-summary-right">
-                <span className="cart-total">
-                  ₹{cartTotal.toLocaleString("en-IN")}
-                </span>
-                <button
-                  className="btn-checkout"
-                  onClick={() => setIsCartOpen(true)}
-                >
-                  View Cart →
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="product-grid">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                price={product.price}
-                originalPrice={product.originalPrice}
-                discount={product.discount}
-                rating={product.rating}
-                image={product.image}
-                isBestSeller={product.isBestSeller}
-                isWishlisted={wishlist.includes(product.id)}
-                onAddToCart={() => addToCart(product)}
-                onToggleWishlist={() => toggleWishlist(product.id)}
-              />
-            ))
-          ) : (
-            <div className="no-results">
-              <p>😕 No products found</p>
-              <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedBrand("All");
-                }}
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <p>&copy; 2025 TechStore. All rights reserved.</p>
-      </footer>
+      {/* Footer Component */}
+      <Footer />
     </div>
   );
 }
